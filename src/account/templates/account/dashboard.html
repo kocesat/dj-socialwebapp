@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mt-3">
+    <div class="h3 text-primary">
+        Dashboard
+    </div>
+    <div>
+        <a href="#" class="btn btn-primary rounded-pill">Upload New Image</a>
+    </div>
+</div>
+
+<hr>
+
+<div class="row">
+    <div class="col-sm">
+        <div class="card border-primary text-center" style="height:10em;">
+            <div class="card-body">
+                {% with total_images_created=request.user.images_created.count %}
+                <p>Welcome to your dashboard. You have bookmarked <strong class="text-primary">
+                    {{ total_images_created }} 
+                </strong> image{{total_images_created|pluralize}}. </p>
+                {% endwith %}    
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="card border-primary text-center" style="height:10em;">
+            <div class="card-body">
+                <p>
+                    Drag the following button to your browser bookmarks toolbar to bookmark  
+                    images from other websites (Doesn't work) <br>
+                     <i class="bi bi-arrow-down"></i> <br>
+                    <a href="javascript:{% include 'bookmarklet_launcher.js' %}" class="btn btn-sm btn-warning rounded-pill"><i class="bi bi-aspect-ratio"></i>
+                        Bookmark it
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="card border-primary text-center" style="height:10em;">
+            <div class="card-body">
+                <p>
+                    You can <a href="{% url 'account:edit' %}"> <strong>update your profile</strong> </a> or <a href="{% url 'account:password_change' %}"><strong>change your password</strong></a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Bookmark an image{% endblock %}
+
+{% block content %}
+
+<div class="card-border-light">
+    <div class="card-header">
+        <h5 class="text-primary">Bookmark an image</h5>
+    </div>
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="card-border-light">
+                <div class="card-body">
+                    <img src="{{ request.GET.url }}" width=430 height=430 alt="Broken image">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <div class="card-border-light">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form|crispy }}
+                        {% csrf_token %}
+                        <div class="float-right mx-2">
+                            <a href="#" class="btn btn-warning">Cancel</a>
+                            <input type="submit" href="{% url 'images:create' %}" class="btn btn-primary" value="Bookmark It"></input>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

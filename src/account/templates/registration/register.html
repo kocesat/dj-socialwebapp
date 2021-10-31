@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <div class="card border-light mb-3">
+            <div class="card-header">
+                <h4>Register now</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Please, use the following form to login:
+                </p>
+                <form method="POST">
+                    {{form|crispy}}
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                    <input class="btn btn-primary btn-block" type="submit" value="Register"/>
+                </form>
+            </div>
+        </div>    
+    </div>
+    <div class="col-sm-3"></div>    
+</div>
+
+{% endblock content %}

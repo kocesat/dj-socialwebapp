@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Account{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div>
+        <div class="card border-light mb-3">
+            <div class="card-header">
+                <h4>Edit your account</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Please, use the following form to update your profile:
+                </p>
+                <form method="POST" enctype="multipart/form-data">
+                    {{user_form|crispy}}
+                    {{profile_form|crispy}}
+                    {% csrf_token %}
+                    {% if request.user.photo %}
+                       <img src="{{ request.user.profile.photo.url }}" width="200" height="170" alt="">
+                    {% endif %}
+                    <input class="btn btn-primary btn-block" type="submit" value="Save Changes"/>
+                </form>
+            </div>
+        </div>    
+    </div>
+</div>
+
+{% endblock content %}
