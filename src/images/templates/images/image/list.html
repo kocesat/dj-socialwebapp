@@ -15,11 +15,56 @@
             <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
         </div>
         <div class="card-footer">
-            <a class="btn btn-warning" href="{{ image.get_absolute_url }}"><i class="bi bi-eyeglasses"></i></a>
-            <a class="btn btn-danger" href="#"> <i class="bi bi-heart"></i> </a>
-            <a class="btn btn-danger" href="#"> <i class="bi bi-heart-fill"></i> </a>
+            {% with total_likes=image.users_like.count users_like=image.users_like.all %}
+            <a class="btn btn-warning" href="{{ image.get_absolute_url }}"><i class="bi bi-eyeglasses"></i> Details</a>
+            <a href="#" class="btn btn-danger" id="likeBtn" 
+                    data-action="{% if request.user in users_like %}un{% endif %}like"
+                    data-id={{ image.id }}>
+                {% if request.user in users_like %}
+                <i id="likeIcon{{image.id}}" class="bi bi-heart-fill"></i>
+                {% else %}
+                <i id="likeIcon{{image.id}}" class="bi bi-heart"></i>
+                {% endif %}
+            </a>
+            {% endwith %}
+            <!-- <a class="btn btn-danger" href="#"> <i class="bi bi-heart"></i> </a>
+            <a class="btn btn-danger" href="#"> <i class="bi bi-heart-fill"></i> </a> -->
         </div>
     </div>
     {% endfor %}
 </div>
+{% endblock %}
+
+{% block domready %}
+    $('a#likeBtn').click(function(e){
+        var likeBtn = $(this)
+        var id = likeBtn.data('id');
+        var previousAction = likeBtn.data('action');
+        console.log("id: " + id);
+        console.log("action: " + previousAction);
+        
+        e.preventDefault();
+        
+        $.post('{% url "images:like" %}',
+            {
+                id: id,
+                action: previousAction
+            },
+            function(data){
+                var likeIcon = $('i#likeIcon' + id );
+                if(data['status'] == 'ok'){
+                    // toggle data-action
+                    likeBtn.data('action', previousAction == 'like' ? 'unlike' : 'like');
+
+                    // toggle the inner HTML
+                    if (previousAction == 'like') {
+                        likeIcon.removeClass('bi-heart').addClass('bi-heart-fill');
+                        
+                    } else {
+                        likeIcon.removeClass('bi-heart-fill').addClass('bi-heart');
+                    } 
+                }
+            }
+        );
+    });
 {% endblock %}
