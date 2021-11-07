@@ -1,0 +1,44 @@
+{% load thumbnail %}
+
+{% for image in images %}
+<div class="card my-3" style="min-width: 300px; max-width: 300px;">
+    <a href="{{ image.get_absolute_url }}">
+        <img class="card-img-top" width="300" height="280" src="{{ image.url }}" alt="Card image cap">
+    </a>
+    <div class="card-body">
+        <h5 class="card-title">{{ image.title }}</h5>
+        <p class="card-text">{{ image.description }}</p>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    </div>
+    <div class="card-footer">
+        {% with total_likes=image.users_like.count users_like=image.users_like.all %}
+        <a class="btn btn-warning" href="{{ image.get_absolute_url }}"><i class="bi bi-eyeglasses"></i> Details</a>
+        <a href="#" class="btn btn-danger" id="likeBtn" 
+                data-action="{% if request.user in users_like %}un{% endif %}like"
+                data-id={{ image.id }}>
+            {% if request.user in users_like %}
+            <i id="likeIcon{{image.id}}" class="bi bi-heart-fill"></i>
+            {% else %}
+            <i id="likeIcon{{image.id}}" class="bi bi-heart"></i>
+            {% endif %}
+        </a>
+        {% endwith %}
+        <!-- <a class="btn btn-danger" href="#"> <i class="bi bi-heart"></i> </a>
+        <a class="btn btn-danger" href="#"> <i class="bi bi-heart-fill"></i> </a> -->
+    </div>
+</div>
+{% endfor %}
+
+<!-- <div id="image-list">
+    <a href="{{ image.get_absolute_url }}">
+        {% thumbnail image.image 300x300 crop="smart" as im %}
+        <a href="{{ image.get_absolute_url }}">
+            <img src="{{ im.url }}" alt="">
+        </a>
+    </a>
+    <div>
+        <a href="{{ image.get_absolute_url }}">
+            {{ image.title }}
+        </a>
+    </div>
+</div> -->

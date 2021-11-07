@@ -3,39 +3,54 @@
 {% block title %} Images {% endblock title %}
 
 {% block content %}
-<div class="card-deck ml-3">
-    {% for image in images %}
-    <div class="card my-3" style="min-width: 300px; max-width: 300px;">
-        <a href="{{ image.get_absolute_url }}">
-            <img class="card-img-top" width="300" height="280" src="{{ image.url }}" alt="Card image cap">
-        </a>
-        <div class="card-body">
-            <h5 class="card-title">{{ image.title }}</h5>
-            <p class="card-text">{{ image.description }}</p>
-            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-        </div>
-        <div class="card-footer">
-            {% with total_likes=image.users_like.count users_like=image.users_like.all %}
-            <a class="btn btn-warning" href="{{ image.get_absolute_url }}"><i class="bi bi-eyeglasses"></i> Details</a>
-            <a href="#" class="btn btn-danger" id="likeBtn" 
-                    data-action="{% if request.user in users_like %}un{% endif %}like"
-                    data-id={{ image.id }}>
-                {% if request.user in users_like %}
-                <i id="likeIcon{{image.id}}" class="bi bi-heart-fill"></i>
-                {% else %}
-                <i id="likeIcon{{image.id}}" class="bi bi-heart"></i>
-                {% endif %}
-            </a>
-            {% endwith %}
-            <!-- <a class="btn btn-danger" href="#"> <i class="bi bi-heart"></i> </a>
-            <a class="btn btn-danger" href="#"> <i class="bi bi-heart-fill"></i> </a> -->
-        </div>
-    </div>
-    {% endfor %}
+<div class="card-deck ml-3" id="image-list">
+    {% include "images/image/list_ajax.html" %}
 </div>
 {% endblock %}
 
 {% block domready %}
+    var page = 1;
+    var emptyPage = false;
+    var blockRequest = false;
+
+    <!-- Scroll Down Event -->
+    $(window).scroll(function(){
+        var margin = $(document).height() - $(window).height() - 200;
+        if ($(window).scrollTop() > margin && emptyPage == false && blockRequest == false) {
+            blockRequest = true;
+            page += 1;
+            $.get('?page=' + page, function(data){
+                if (data == ''){
+                    emptyPage = true;
+                }
+                else {
+                    blockRequest = false;
+                    $('#image-list').append(data);
+                }
+            });
+        }
+    });
+
+    <!-- Key Down event -->
+    $(window).keydown(function(){
+        console.log("Key down event triggered")
+        var margin = $(document).height() - $(window).height() - 200;
+        if ($(window).keyup() > margin && emptyPage == false && blockRequest == false) {
+            blockRequest = true;
+            page += 1;
+            $.get('?page=' + page, function(data){
+                if (data == ''){
+                    emptyPage = true;
+                }
+                else {
+                    blockRequest = false;
+                    $('#image-list').append(data);
+                }
+            });
+        }
+    });
+
+    <!-- Like event -->
     $('a#likeBtn').click(function(e){
         var likeBtn = $(this)
         var id = likeBtn.data('id');

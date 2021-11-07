@@ -4,14 +4,36 @@ from django.contrib import messages
 from .forms import ImageCreateForm
 from .models import Image
 from account.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from common.decorators import ajax_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 @login_required
 def image_list(request):
+    """
+    Returns all the image list of every user
+    """
     images = Image.objects.all()
+    paginator = Paginator(images, per_page=6)
+    page = request.GET.get('page')
+    try:
+        images = paginator.page(page)
+    except PageNotAnInteger:
+        # deliver the first page
+        images = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            # return an empty page if ajax request
+            return HttpResponse('')
+        # If page is out of range deliver last page of results
+        images = paginator.page(paginator.num_pages)
+    if request.is_ajax():
+        return render(request, 'images/image/list_ajax.html', {
+            'section': 'images',
+            'images': images
+        })
     return render(request, 'images/image/list.html', {
         'images': images,
         'section': 'images'
@@ -20,6 +42,10 @@ def image_list(request):
 
 @login_required
 def image_create(request):
+    """
+    Manually creates images to bookmark
+    """
+    # TODO: Add image upload functionality to this view
     if request.method == 'POST':
         # form is sent
         form = ImageCreateForm(data=request.POST)    
